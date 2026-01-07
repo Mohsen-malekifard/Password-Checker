@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Password Tool</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #020617, #000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #e5e7eb;
+    }
+
+    .card {
+      width: 360px;
+      background: #020617;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 25px 80px rgba(0,0,0,.6);
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: #020617;
+      color: #e5e7eb;
+      margin-bottom: 12px;
+    }
+
+    .strength {
+      height: 10px;
+      border-radius: 6px;
+      background: #020617;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      transition: .3s;
+    }
+
+    .label {
+      text-align: center;
+      font-size: .9rem;
+      margin-bottom: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #38bdf8;
+      color: #020617;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .copy {
+      margin-top: 8px;
+      background: #22c55e;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Password Tool</h1>
+
+    <input id="password" placeholder="Type password..." />
+
+    <div class="strength">
+      <div id="bar" class="bar"></div>
+    </div>
+
+    <div id="label" class="label">Strength: -</div>
+
+    <button id="generate">Generate Strong Password</button>
+    <button id="copy" class="copy">Copy to Clipboard</button>
+  </div>
+
+  <script>
+    const input = document.getElementById("password");
+    const bar = document.getElementById("bar");
+    const label = document.getElementById("label");
+
+    function checkStrength(value) {
+      let score = 0;
+      if (value.length >= 8) score++;
+      if (/[A-Z]/.test(value)) score++;
+      if (/[0-9]/.test(value)) score++;
+      if (/[^A-Za-z0-9]/.test(value)) score++;
+
+      bar.style.width = score * 25 + "%";
+
+      if (score <= 1) {
+        bar.style.background = "#ef4444";
+        label.textContent = "Strength: Weak";
+      } else if (score === 2 || score === 3) {
+        bar.style.background = "#facc15";
+        label.textContent = "Strength: Medium";
+      } else {
+        bar.style.background = "#22c55e";
+        label.textContent = "Strength: Strong";
+      }
+    }
+
+    input.addEventListener("input", e => {
+      checkStrength(e.target.value);
+    });
+
+    document.getElementById("generate").onclick = () => {
+      const chars =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      let pass = "";
+      for (let i = 0; i < 14; i++) {
+        pass += chars[Math.floor(Math.random() * chars.length)];
+      }
+      input.value = pass;
+      checkStrength(pass);
+    };
+
+    document.getElementById("copy").onclick = async () => {
+      if (!input.value) return;
+      await navigator.clipboard.writeText(input.value);
+      label.textContent = "Copied to clipboard";
+    };
+  </script>
+</body>
+</html>
